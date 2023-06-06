@@ -28,27 +28,39 @@ const ListingCard = ({ data, currentUser, reservation, buttonLabel }) => {
     return `${format(start, "PP")} - ${format(end, "PP")}`;
   }, [data]);
 
+  const avgListing = () => {
+    let sum = 0;
+    data?.reivew?.map((r) => {
+      sum += r.rating;
+    });
+    return sum / data.reivew.length;
+  };
+
   return (
-    <div
-      onClick={() => navigate(`/listing/${data.listing_id}`)}
-      className="col-span-1 cursor-pointer group"
-    >
+    <div className="col-span-1 cursor-pointer group">
       <div className="flex flex-col w-full gap-2">
         <div className="relative w-full overflow-hidden aspect-square rounded-xl">
           <img
-            className="object-cover w-full h-full transition group-hover:scale-110"
-            src={`images/listing/${data.image_src}`}
+            className="object-cover w-full h-full transition hover:scale-110"
+            src={`${data.image_src}`}
             alt="Listing"
+            onClick={() => navigate(`/listing/${data.listing_id}`)}
           />
           {parseInt(user?.id) !== data.user_id ? (
-            <div className="absolute cursor-pointer top-5 right-5">
+            <div className="absolute top-5 right-5">
               <HeartButton listingId={data.listing_id} currentUser={user} />
             </div>
           ) : (
             <></>
           )}
         </div>
-        <div className="text-lg font-semibold">{data.location}</div>
+        <div className="flex justify-between text-lg font-semibold">
+          <span>{data.location}</span>
+
+          <span className="mr-2 font-thin">
+            {data.review?.length > 2 ? avgListing : "-"}
+          </span>
+        </div>
         <div className="font-light text-neutral-500">
           {reservationDate || listingDate}
         </div>

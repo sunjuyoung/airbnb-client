@@ -22,7 +22,6 @@ export const getListingById = async (id, token) => {
 export const useFavorites = async (data, token, hasFavorited) => {
   let res;
   if (hasFavorited) {
-    console.log("addddddddd");
     res = await newRequest.delete(
       `/favorite/${data.listing_id}/${data.userId}`,
       {
@@ -30,7 +29,6 @@ export const useFavorites = async (data, token, hasFavorited) => {
       }
     );
   } else {
-    console.log("delete");
     res = await newRequest.post("/favorite", data, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -84,6 +82,37 @@ export const getNotification = async (id, token) => {
 export const getNotificationCount = async (id, token) => {
   const response = await newRequest.get(`/notification/count/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+//Image
+export const getProfileImage = async (userId, token) => {
+  const response = await newRequest.get(`/${userId}/profile-image`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateProfileImage = async (userId, token, file) => {
+  await newRequest.post(
+    `/${userId}/profile-image`,
+    { file },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
+export const saveListingImage = async (userId, token, files) => {
+  const response = await newRequest.post(`/listing/${userId}/image`, files, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
   });
   return response.data;
 };

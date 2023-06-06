@@ -6,10 +6,12 @@ const PhotosUpload = ({ onChange }) => {
   const handleImageChange = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-    //setPhotos([...photos, event.target.files[0]]);
     onChange(event.target.files[0]);
     if (!file) {
       setImagePreview(null);
+      return;
+    }
+    if (imagePreview.length >= 6) {
       return;
     }
     const reader = new FileReader();
@@ -21,7 +23,6 @@ const PhotosUpload = ({ onChange }) => {
 
   const removePhoto = (e, link) => {
     e.preventDefault();
-
     setImagePreview([...imagePreview.filter((photo) => photo !== link)]);
   };
 

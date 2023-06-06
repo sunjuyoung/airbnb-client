@@ -14,7 +14,7 @@ import Counter from "../../components/inputs/Counter";
 import ImageUpload from "../../components/inputs/ImageUpload";
 import Button from "../../components/Button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import newRequest from "../../utils/newRequest";
+import newRequest, { saveListingImage } from "../../utils/newRequest";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -51,14 +51,14 @@ const ListingForm = () => {
       guestCount: 1,
       roomCount: 1,
       bathroomCount: 1,
-      imageSrc: null,
       price: 1,
       title: "",
       description: "",
     },
   });
-  const dateChekc = dateRange.endDate.getTime() === new Date().getTime();
 
+  //const dateChekc = dateRange.endDate.getTime() === new Date().getTime() && image.length > 1;
+  const checkButton = image.length > 2;
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -79,35 +79,23 @@ const ListingForm = () => {
   });
 
   const saveImage = async () => {
-    const formData = new FormData();
-    //formData.append("file", image[0]);
-    for (let i = 0; i < image?.length; i++) {
-      formData.append("files", image[i]);
+    const files = new FormData();
+    if (image === null) return;
+    for (let i = 0; i < image.length; i++) {
+      files.append("files", image[i]);
     }
 
-    const savedUserImageResponse = await axios.post(
-      "http://localhost:8081/image/uploads",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    return savedUserImageResponse;
+    return await saveListingImage(user?.id, token, files);
   };
 
   const listingSubmit = async (data) => {
     const result = await saveImage();
-    console.log(result.data);
 
     mutation.mutate({
       ...data,
       location: location.label,
       email: user.email,
-      // imgPath: result.data.link,
-      // uuid: result.data.uuid,
-      images: result.data,
+      images: result,
       latlng: JSON.stringify(location.latlng),
       startDate: dateRange.startDate,
       endDate: dateRange.endDate,
@@ -119,7 +107,7 @@ const ListingForm = () => {
   const guestCount = watch("guestCount");
   const roomCount = watch("roomCount");
   const bathroomCount = watch("bathroomCount");
-  const imageSrc = watch("imageSrc");
+  //const imageSrc = watch("imageSrc");
 
   const setCustomValue = (id, value) => {
     setValue(id, value, {
@@ -163,6 +151,15 @@ const ListingForm = () => {
       startDate: ranges.selection.startDate,
       endDate: ranges.selection.endDate,
     }));
+  };
+
+  const handleImageCheck = (value) => {
+    if (image.length < 6) {
+      setImage(() => [...image, value]);
+    } else {
+      toast.error("사진 저장 최대 갯수는 6개 이하입니다.");
+      return;
+    }
   };
 
   return (
@@ -239,30 +236,10 @@ const ListingForm = () => {
           <hr />
           <Heading
             title="사진"
-            subtitle="Show guests what your place looks like!"
+            subtitle="정확한 정보를 위해 최소 3장 최대 6장의 사진을 등록해 주세요 (5MB이하)"
           />
 
-          <PhotosUpload
-            onChange={(value) => setImage(() => [...image, value])}
-          />
-          {/* {imagePreview && (
-            <div className="w-full h-full ">
-              <img
-                src={imagePreview}
-                alt="Selected"
-                className="preview-image"
-              />
-            </div>
-          )}
-          <label htmlFor="image-input">Select an image:</label>
-          <input
-            type="file"
-            id="image-input"
-            accept="image/*"
-            onChange={handleImageChange}
-          /> */}
-
-          {/* <ImageUpload onChange={(value) => setImage(value)} value={imageSrc} /> */}
+          <PhotosUpload onChange={(value) => handleImageCheck(value)} />
         </div>
         {/* 타이틀 */}
         <div className="flex flex-col gap-8 mt-7">
@@ -318,7 +295,7 @@ const ListingForm = () => {
         <div className="flex flex-col gap-2 p-6">
           <div className="flex flex-row items-center w-full gap-4 ">
             <Button
-              disabled={dateChekc}
+              disabled={!checkButton}
               label={"저장"}
               onClick={handleSubmit(listingSubmit)}
               outline

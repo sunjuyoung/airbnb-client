@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import Heading from "./Heading";
+import useReview from "../hooks/useReview";
 
 const EmptyReview = ({
   title = "후기가 없습니다",
@@ -21,11 +22,7 @@ const EmptyReview = ({
     >
       <Heading center title={title} subtitle={subtitle} />
       <div className="w-48 mt-4">
-        {!disabledButton ? (
-          <Button outline label="후기 남기기" onClick={() => navigate("/")} />
-        ) : (
-          <></>
-        )}
+        {!disabledButton ? <Button outline label="후기 남기기" /> : <></>}
       </div>
     </div>
   );

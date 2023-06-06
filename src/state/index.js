@@ -4,6 +4,7 @@ const initialState = {
   user: null,
   token: null,
   favorites: [],
+  s3: "https://syseoz610-airbnb-test.s3.ap-northeast-2.amazonaws.com/listing-images",
 };
 
 export const authSlice = createSlice({

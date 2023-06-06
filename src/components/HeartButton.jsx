@@ -30,12 +30,12 @@ const HeartButton = ({ listingId, currentUser }) => {
       } else {
         dispatch(addFavorite({ listingId }));
       }
-
       toast.success("favorite add sucess");
     },
   });
 
-  const toggleFavorite = () => {
+  const toggleFavorite = (e) => {
+    e.preventDefault();
     mutation.mutate({
       listing_id: parseInt(listingId),
       email: currentUser.email,

@@ -56,9 +56,9 @@ const UserMenu = ({ user }) => {
     navigate("/listingForm");
   }, []);
 
-  if (isError) {
-    return <span>Error: {error.message}</span>;
-  }
+  // if (isError) {
+  //   return <span>Error: {error.message}</span>;
+  // }
   // if (isLoading) {
   //   return <span>Loading..</span>;
   // }
@@ -148,7 +148,7 @@ const UserMenu = ({ user }) => {
                 <MenuItem
                   label="계정"
                   onClick={() => {
-                    userMenuToggle("/properties");
+                    userMenuToggle("/profile");
                   }}
                 />
 

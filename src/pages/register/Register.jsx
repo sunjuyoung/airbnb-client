@@ -39,8 +39,7 @@ const Register = () => {
         navigate("/login");
       }
     } catch (error) {
-      alert(error.response.data.defaultMessage);
-      toast.error(error);
+      toast.error(error.response.data[0].defaultMessage);
     }
   };
 

@@ -40,27 +40,24 @@ const home = () => {
     hasNextPage,
     hasPreviousPage,
   } = useInfiniteQuery(
-    ["listings", token, url],
+    ["listings"],
     async ({ pageParam = 1 }) => await getAllListing(token, url, pageParam),
-
     {
-      getPreviousPageParam: (firstPage) => {
-        !firstPage.first && firstPage.number > 1
-          ? firstPage.number - 1
-          : null ?? undefined;
-      },
+      // getPreviousPageParam: (firstPage) => {
+      //   !firstPage.first && firstPage.number > 1
+      //     ? firstPage.number - 1
+      //     : null ?? undefined;
+      // },
       getNextPageParam: (lastPage) =>
-        !lastPage.last && lastPage.number < lastPage.totalPages
-          ? lastPage.number + 1
-          : null ?? undefined,
+        !lastPage.last ? lastPage.number + 2 : null ?? undefined,
     }
   );
 
-  // useEffect(() => {
-  //   if (inView) {
-  //     fetchNextPage();
-  //   }
-  // }, [inView]);
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   useEffect(() => {
     if (locationValue || category || startDate) {
@@ -136,7 +133,7 @@ xl:px-20 md:px-10 px-4 sm:px-2"
                   ? "Loading more..."
                   : hasNextPage
                   ? "Load Newer"
-                  : "Nothing more to load"}
+                  : "...."}
               </button>
             </div>
             <div>

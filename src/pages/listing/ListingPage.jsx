@@ -16,16 +16,18 @@ import { useEffect } from "react";
 import HeartButton from "../../components/HeartButton";
 import Avatar from "../../components/Avatar";
 import ListingReview from "../../components/listing/ListingReview";
-
+import useReview from "../../hooks/useReview";
 const ListingPage = () => {
   const param = useParams();
   const token = useSelector((state) => state?.token);
   const user = useSelector((state) => state?.user);
+  const s3Url = useSelector((state) => state?.s3);
   const listing_id = parseInt(param.id);
   const [totalPrice, setTotalPrice] = useState(1000);
   const reservations = [];
   const queryClient = useQueryClient();
   const [disabled, setDisabled] = useState(true);
+
   const [dateRange, setDateRange] = useState({
     startDate: new Date(),
     endDate: new Date(),
@@ -122,19 +124,19 @@ xl:px-20 md:px-10 px-4 sm:px-2"
           >
             <div className="grid gap-2 grid-cols-[2fr_1fr] rounded-3xl overflow-hidden">
               <img
-                src={`/images/listing/${listing.imageSrc[0]}`}
+                src={`${s3Url}/${listing.userId}/listing/${listing.imageSrc[0]}`}
                 className="relative object-cover w-screen aspect-square"
                 alt="Image"
               />
               <div className="grid">
                 <img
-                  src={`/images/listing/${listing.imageSrc[1]}`}
+                  src={`${s3Url}/${listing.userId}/listing/${listing.imageSrc[1]}`}
                   className="relative object-cover w-screen aspect-square"
                   alt="Image"
                 />
                 <div className="overflow-hidden">
                   <img
-                    src={`/images/listing/${listing.imageSrc[2]}`}
+                    src={`${s3Url}/${listing.userId}/listing/${listing.imageSrc[2]}`}
                     className="relative object-cover w-screen cursor-pointer aspect-square top-2"
                     alt="Image"
                   />
