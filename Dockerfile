@@ -8,13 +8,13 @@ RUN mkdir /app
 WORKDIR /app
  
 # work dir 에 dist 폴더 생성 /app/dist
-RUN mkdir ./dist
+#RUN mkdir ./dist
  
 # host pc의 현재경로의 dist 폴더를 workdir 의 dist 폴더로 복사
-ADD ./dist ./dist
+#ADD ./dist ./dist
  
 # nginx 의 default.conf 를 삭제
-RUN rm /etc/nginx/conf.d/default.conf
+#RUN rm /etc/nginx/conf.d/default.conf
  
 # host pc 의 default.conf 를 아래 경로에 복사
 COPY ./default.conf /etc/nginx/conf.d
