@@ -1,25 +1,45 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Avatar from "../../components/Avatar";
-import { BiCheck } from "react-icons/bi";
+import { BiCheck, BiX } from "react-icons/bi";
 import { BiImageAdd } from "react-icons/bi";
 import { useSelector } from "react-redux";
 import ProfileImage from "../../components/inputs/ProfileImage";
 import newRequest, {
+  getProfileById,
   getProfileImage,
+  resendEmailVerify,
   updateProfileImage,
 } from "../../utils/newRequest";
+import { useQuery } from "@tanstack/react-query";
 
 const ProfilePage = () => {
   const [avatarImage, setAvatarImage] = useState(null);
   const user = useSelector((state) => state?.user);
   const token = useSelector((state) => state?.token);
   const [image, setImage] = useState(null);
-
   const [profileEditView, setProfileEditView] = useState(false);
 
-  useEffect(() => {
-    handleProfileImage();
-  }, []);
+  const {
+    isLoading,
+    isError,
+    data: account,
+    error,
+    isFetching,
+    isPreviousData,
+  } = useQuery(["account"], async () => await getProfileById(user?.id, token));
+
+  if (isError) {
+    return <span>Error: {error.message}</span>;
+  }
+  if (isLoading) {
+    return <span>Loading..</span>;
+  }
+
+  if (isFetching) {
+    return <span>Loading..</span>;
+  }
+
+  console.log(account);
 
   const handleProfile = async (e) => {
     e.preventDefault();
@@ -35,34 +55,48 @@ const ProfilePage = () => {
     setProfileEditView((prev) => !prev);
   };
 
-  const handleProfileImage = useCallback(async () => {
-    const res = await getProfileImage(user.id, token);
+  // const handleProfileImage = useCallback(async () => {
+  //   const res = await getProfileImage(user.id, token);
 
-    if (res === "") {
-      setAvatarImage("/images/avatar2.png");
-    } else {
-      setAvatarImage(res);
-    }
-  }, [user, avatarImage]);
+  //   if (res === "") {
+  //     setAvatarImage("/images/avatar2.png");
+  //   } else {
+  //     setAvatarImage(res);
+  //   }
+  // }, [user, avatarImage]);
+
+  const handleEmailVerify = async () => {
+    const response = await resendEmailVerify(user.id, token);
+  };
 
   return (
     <div className="flex flex-row row-span-2 pt-10 mx-12 mt-10">
-      <div className="flex flex-col w-3/8 gap-7 lg:w-3/8">
+      <div className="flex flex-col mr-10 w-3/8 gap-7 lg:w-3/8">
         {/* 이미지 */}
 
         <ProfileImage
           username={user.name}
           imageButton={profileEditView}
           onChange={(value) => setImage(value)}
-          img={avatarImage}
+          img={
+            account.profileImageId === null
+              ? "/images/avatar2.png"
+              : account.profileImageId
+          }
         />
 
         <div className="pr-6">
           <div className="flex flex-col gap-3 my-4">
             <p className="text-2xl font-bold">{user.name} 님의 인증 정보</p>
             <div className="flex gap-3">
-              <BiCheck size={28} />
-              <span>이메일 주소</span>
+              <span>
+                {account.emailVerify ? (
+                  <BiCheck size={28} />
+                ) : (
+                  <BiX size={28} />
+                )}
+              </span>
+              <span>이메일</span>
             </div>
           </div>
           <hr />
@@ -70,19 +104,23 @@ const ProfilePage = () => {
             <p className="text-xl font-bold">본인 인증</p>
             <div>
               <span className="text-sm">
-                본인 인증 배지를 통해 본인 인증을 마쳤다는 사실을 다른 <br />
+                메일 인증을 통해 인증을 마쳤다는 사실을 다른 <br />
                 사용자에게 보여줄 수 있습니다.
               </span>
             </div>
           </div>
           <div>
-            <button className="font-bold rounded-lg hover:bg-gray-200 border-black py-3 px-3 border-[1px] bg-white">
+            <button
+              onClick={handleEmailVerify}
+              disabled={account.emailVerify}
+              className="font-bold rounded-lg cursor-pointer hover:bg-gray-200 border-black py-3 px-3 border-[1px] bg-white"
+            >
               메일 인증
             </button>
           </div>
         </div>
       </div>
-      <div className="flex flex-col w-3/6 gap-4 lg:w-3/6">
+      <div className="flex flex-col w-3/6 gap-4 ml-10 lg:w-3/6">
         {!profileEditView ? (
           <div className="my-auto md:block">
             <div className="mb-4 text-xl font-bold">프로필을 작성해 보세요</div>

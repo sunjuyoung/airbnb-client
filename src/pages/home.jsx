@@ -40,7 +40,7 @@ const home = () => {
     hasNextPage,
     hasPreviousPage,
   } = useInfiniteQuery(
-    ["listings"],
+    ["listings", url],
     async ({ pageParam = 1 }) => await getAllListing(token, url, pageParam),
     {
       // getPreviousPageParam: (firstPage) => {
@@ -48,7 +48,7 @@ const home = () => {
       //     ? firstPage.number - 1
       //     : null ?? undefined;
       // },
-      getNextPageParam: (lastPage) =>
+      getNextPageParam: (lastPage, pages) =>
         !lastPage.last ? lastPage.number + 2 : null ?? undefined,
     }
   );

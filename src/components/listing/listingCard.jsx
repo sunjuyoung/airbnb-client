@@ -1,14 +1,17 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { format } from "date-fns";
 
 import Button from "../Button";
 import { Navigate, useNavigate } from "react-router-dom";
 import HeartButton from "../HeartButton";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { FaStar } from "react-icons/fa";
 
 const ListingCard = ({ data, currentUser, reservation, buttonLabel }) => {
   const navigate = useNavigate();
   const user = useSelector((state) => state?.user);
+  const [rating, setRating] = useState(0);
 
   const reservationDate = useMemo(() => {
     if (!reservation) {
@@ -25,15 +28,13 @@ const ListingCard = ({ data, currentUser, reservation, buttonLabel }) => {
     const start = new Date(data.startDate);
     const end = new Date(data.endDate);
 
-    return `${format(start, "PP")} - ${format(end, "PP")}`;
+    return `${format(start, "MM월dd일")} ~ ${format(end, "MM월dd일")}`;
   }, [data]);
 
-  const avgListing = () => {
-    let sum = 0;
-    data?.reivew?.map((r) => {
-      sum += r.rating;
-    });
-    return sum / data.reivew.length;
+  const calculateAverage = () => {
+    const sum = data.review.reduce((acc, curr) => acc + curr.rating, 0);
+    const average = sum / data.review.length;
+    return average.toFixed(1);
   };
 
   return (
@@ -55,11 +56,15 @@ const ListingCard = ({ data, currentUser, reservation, buttonLabel }) => {
           )}
         </div>
         <div className="flex justify-between text-lg font-semibold">
-          <span>{data.location}</span>
-
-          <span className="mr-2 font-thin">
-            {data.review?.length > 2 ? avgListing : "-"}
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap w-44">
+            {data.location}
           </span>
+          <div className="flex items-center">
+            <span className="mr-2 font-thin">
+              <FaStar />
+            </span>
+            <span>{data.review.length > 2 ? calculateAverage() : "-"}</span>
+          </div>
         </div>
         <div className="font-light text-neutral-500">
           {reservationDate || listingDate}

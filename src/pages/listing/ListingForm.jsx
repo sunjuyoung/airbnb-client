@@ -72,7 +72,10 @@ const ListingForm = () => {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["listings"]);
+      queryClient.invalidateQueries({
+        queryKey: ["listings"],
+        exact: false,
+      });
       toast.success("Listing save sucess");
       navigate("/");
     },

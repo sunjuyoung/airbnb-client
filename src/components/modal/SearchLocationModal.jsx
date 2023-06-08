@@ -53,7 +53,7 @@ const SearchLocationModal = () => {
 
   let bodyContent = (
     <div className="flex flex-col gap-8">
-      <Heading title="Location Filter" subtitle="Find the location!" />
+      <Heading title="지역 선택" subtitle="Find the location!" />
       <CountrySelect
         value={location}
         onChange={(value) => setLocation(value)}

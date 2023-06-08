@@ -117,4 +117,18 @@ export const saveListingImage = async (userId, token, files) => {
   return response.data;
 };
 
+export const getProfileById = async (userId, token) => {
+  const response = await newRequest.get(`/profile/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const resendEmailVerify = async (userId, token) => {
+  const response = await newRequest.get(`/auth/resend-check-email/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
 export default newRequest;
